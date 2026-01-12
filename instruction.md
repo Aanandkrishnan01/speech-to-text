@@ -2,6 +2,8 @@
 
 This document outlines the tasks to be completed for the Speech-to-Text with Speaker Diarization project, based on the [Interview Preparation Instructions](./interview-prep-instructions.md).
 
+## LINK [Github](https://github.com/seven-sense/speech-to-text)
+
 ---
 
 ## 🎯 Overview
@@ -165,7 +167,6 @@ Based on the **Logging Requirements** section in the interview prep instructions
 ...
 2024-01-15 10:35:30,789 - INFO - Transcription completed: 35 segments processed, total_time=245.67s
 2024-01-15 10:35:30,790 - INFO - Output written to: transcript.txt
-
 
 ### Reference
 
