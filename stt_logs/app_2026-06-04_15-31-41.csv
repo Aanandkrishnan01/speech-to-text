@@ -1,0 +1,47 @@
+Timestamp,LogLevel,CPU_Percent,RAM_MB,Message
+"2026-06-04 15:31:41,742",INFO,0.0,426.2,Logging system initialized. TXT log: stt_logs\app_2026-06-04_15-31-41.txt | CSV log: stt_logs\app_2026-06-04_15-31-41.csv
+"2026-06-04 15:31:41,744",INFO,0.0,426.2,"System details: Python PID=2344, Logical CPUs=12, OS RAM Total=7.7 GB"
+"2026-06-04 15:31:41,744",INFO,0.0,426.2,Speech-to-Text Pipeline execution started.
+"2026-06-04 15:31:41,745",INFO,0.0,426.2,=== Starting Section: Loading Hugging Face Pyannote Diarization Pipeline ===
+"2026-06-04 15:31:44,890",INFO,0.0,564.2,=== Finished Section: Loading Hugging Face Pyannote Diarization Pipeline (Duration: 3.145s | RAM Change: +138.0MB) ===
+"2026-06-04 15:31:44,891",INFO,0.0,564.2,=== Starting Section: Loading and Preprocessing Audio file ===
+"2026-06-04 15:31:45,041",INFO,0.0,567.9,"Original Audio details: duration=60.01s, channels=1, sample_rate=22050Hz"
+"2026-06-04 15:31:45,057",INFO,0.0,567.3,"Audio normalized to mono, 16kHz, 16-bit depth."
+"2026-06-04 15:31:45,058",INFO,0.0,567.3,=== Finished Section: Loading and Preprocessing Audio file (Duration: 0.166s | RAM Change: +3.1MB) ===
+"2026-06-04 15:31:45,059",INFO,0.0,567.3,=== Starting Section: Loading OpenAI Whisper Model ===
+"2026-06-04 15:31:47,876",INFO,0.0,1440.0,=== Finished Section: Loading OpenAI Whisper Model (Duration: 2.816s | RAM Change: +872.5MB) ===
+"2026-06-04 15:31:47,877",INFO,0.0,1440.2,=== Starting Section: Converting Full Audio to Float32 Waveform ===
+"2026-06-04 15:31:47,878",DEBUG,0.0,1440.2,"Entering 'segment_to_float32' - Arguments: args=(<pydub.audio_segment.AudioSegment object at 0x000001F301E2EE90>,), kwargs={}"
+"2026-06-04 15:31:47,879",DEBUG,0.0,1440.2,"Converting segment to float32: duration=60.01s, channels=1, rate=16000Hz"
+"2026-06-04 15:31:47,884",DEBUG,0.0,1444.1,"Exiting 'segment_to_float32' - Output: ndarray (shape=(960086,), dtype=float32) | Time: 0.0050s"
+"2026-06-04 15:31:47,885",INFO,0.0,1444.1,"Full waveform tensor shape=torch.Size([1, 960086]), dtype=torch.float32"
+"2026-06-04 15:31:47,886",INFO,0.0,1444.1,=== Finished Section: Converting Full Audio to Float32 Waveform (Duration: 0.008s | RAM Change: +3.9MB) ===
+"2026-06-04 15:31:47,887",INFO,0.0,1444.1,=== Starting Section: Running Pyannote Speaker Diarization ===
+"2026-06-04 15:32:30,076",INFO,0.0,1981.8,=== Finished Section: Running Pyannote Speaker Diarization (Duration: 42.185s | RAM Change: +536.5MB) ===
+"2026-06-04 15:32:30,085",INFO,0.0,1982.2,=== Starting Section: Optimizing Speaker Segments Timeline ===
+"2026-06-04 15:32:30,085",DEBUG,0.0,1982.2,"Entering 'build_clean_segments' - Arguments: args=(<pyannote.core.annotation.Annotation object at 0x000001F30600B890>,), kwargs={}"
+"2026-06-04 15:32:30,086",INFO,0.0,1982.3,"Timeline extraction: raw=1, discarded noise (<0.6s)=0, kept=1"
+"2026-06-04 15:32:30,087",DEBUG,0.0,1982.3,"Entering 'merge_same_speaker' - Arguments: args=([(0.03096875, 60.12284375, 'SPEAKER_00')],), kwargs={'merge_gap': 0.35}"
+"2026-06-04 15:32:30,087",INFO,0.0,1982.3,"Merging same-speaker segments. Input count: 1, Gap threshold: 0.35s"
+"2026-06-04 15:32:30,087",INFO,0.0,1982.3,"Merging complete. Output count: 1 (merged 0 segments) | Time Complexity: O(n), Space Complexity: O(n)"
+"2026-06-04 15:32:30,088",DEBUG,0.0,1982.3,Exiting 'merge_same_speaker' - Output: list of length 1 | Time: 0.0011s
+"2026-06-04 15:32:30,089",DEBUG,0.0,1982.3,"Entering 'split_overlaps' - Arguments: args=([(0.03096875, 60.12284375, 'SPEAKER_00')],), kwargs={}"
+"2026-06-04 15:32:30,089",INFO,0.0,1982.3,Resolving overlapping speaker segments. Input count: 1
+"2026-06-04 15:32:30,090",INFO,0.0,1982.3,"Overlap resolution complete. Output count: 1 (performed 0 splits/truncations) | Time Complexity: O(n), Space Complexity: O(n)"
+"2026-06-04 15:32:30,091",DEBUG,0.0,1982.3,Exiting 'split_overlaps' - Output: list of length 1 | Time: 0.0016s
+"2026-06-04 15:32:30,091",DEBUG,0.0,1982.3,"Entering 'merge_same_speaker' - Arguments: args=([(0.03096875, 60.12284375, 'SPEAKER_00')],), kwargs={'merge_gap': 0.01}"
+"2026-06-04 15:32:30,092",INFO,0.0,1982.3,"Merging same-speaker segments. Input count: 1, Gap threshold: 0.01s"
+"2026-06-04 15:32:30,092",INFO,0.0,1982.3,"Merging complete. Output count: 1 (merged 0 segments) | Time Complexity: O(n), Space Complexity: O(n)"
+"2026-06-04 15:32:30,093",DEBUG,0.0,1982.3,Exiting 'merge_same_speaker' - Output: list of length 1 | Time: 0.0010s
+"2026-06-04 15:32:30,093",DEBUG,0.0,1982.4,Exiting 'build_clean_segments' - Output: list of length 1 | Time: 0.0072s
+"2026-06-04 15:32:30,093",INFO,0.0,1982.4,=== Finished Section: Optimizing Speaker Segments Timeline (Duration: 0.008s | RAM Change: +0.2MB) ===
+"2026-06-04 15:32:30,094",INFO,0.0,1982.4,Speaker Diarization complete: Found 1 unique speakers: ['SPEAKER_00']
+"2026-06-04 15:32:30,095",INFO,0.0,1982.4,Starting Whisper transcription for 1 segments.
+"2026-06-04 15:32:30,095",INFO,0.0,1982.4,=== Starting Section: Transcribing 1 audio segments ===
+"2026-06-04 15:32:30,096",INFO,0.0,1982.4,Transcribing segment 1/1: [0.03s -- 60.12s] for SPEAKER_00
+"2026-06-04 15:32:30,101",DEBUG,0.0,1986.2,"Entering 'segment_to_float32' - Arguments: args=(<pydub.audio_segment.AudioSegment object at 0x000001F301E2EAD0>,), kwargs={}"
+"2026-06-04 15:32:30,102",DEBUG,0.0,1986.2,"Converting segment to float32: duration=59.98s, channels=1, rate=16000Hz"
+"2026-06-04 15:32:30,108",DEBUG,0.0,1990.0,"Exiting 'segment_to_float32' - Output: ndarray (shape=(959600,), dtype=float32) | Time: 0.0056s"
+"2026-06-04 15:33:42,830",INFO,0.0,1540.2,"Segment 1 transcribed successfully in 72.73s: ""Welcome to samplolid.com, a free online resource f..."""
+"2026-06-04 15:33:43,763",INFO,0.0,1792.6,=== Finished Section: Transcribing 1 audio segments (Duration: 73.667s | RAM Change: -189.8MB) ===
+"2026-06-04 15:33:43,764",INFO,0.0,1792.6,Done. Wrote transcript to: transcript.txt
