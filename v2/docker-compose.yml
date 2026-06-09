@@ -1,0 +1,107 @@
+# docker-compose for the Speech-to-Text pipeline.
+#
+# Two services share the same image:
+# - `stt`        runs the CLI (default: `python main.py verify`). Override with
+#                `docker compose run --rm stt python main.py batch some.wav`
+# - `stt-realtime` (Linux only) runs realtime mic mode with audio passthrough.
+#
+# Model weights are NOT baked into the image — they download on first run into
+# the named volume `model-cache`, which is mounted at /root/.cache inside the
+# container (HuggingFace + NeMo both write there).
+
+services:
+  stt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: stt:latest
+    env_file:
+      - .env
+    volumes:
+      # Model cache — persistent across container runs
+      - model-cache:/root/.cache
+      # Audio I/O — input files for batch mode + recorder output (Task 4).
+      # Mounted at both /audio (legacy ro alias for batch input) and /app/audio
+      # (rw, where recordings are written and config.recording.dir resolves to).
+      - ./audio:/audio:ro
+      - ./audio:/app/audio
+      # Output transcripts and logs back to the host
+      - ./transcripts:/app/transcripts
+      - ./logs:/app/logs
+      # Live config — edit on host, restart container to apply
+      - ./config.json:/app/config.json:ro
+      # Live source — restart container after edits to apply (no rebuild)
+      - ./src:/app/src:ro
+      - ./static:/app/static:ro
+      - ./main.py:/app/main.py:ro
+      # Cloud credentials (e.g. google-sa.json for Google Cloud STT). Optional.
+      - ./credentials:/app/credentials:ro
+      # Benchmark cache + reports (Task 6) persist across container runs
+      - ./benchmark_cache:/app/benchmark_cache
+      - ./benchmark_reports:/app/benchmark_reports
+    # Default command — override on the CLI for batch/realtime
+    command: ["python", "main.py", "verify"]
+
+  # Multi-user web server. Anyone on the network with a browser can transcribe
+  # via http://<host>:8000 — works on Mac/Win/Linux/iPad/Android because the
+  # browser handles the mic, not Docker.
+  #   docker compose up stt-web
+  stt-web:
+    extends:
+      service: stt
+    ports:
+      - "8000:8000"
+    volumes:
+      - model-cache:/root/.cache
+      - ./audio:/app/audio
+      - ./transcripts:/app/transcripts
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json:ro
+      # Live source — restart container after edits to apply (no rebuild)
+      - ./src:/app/src:ro
+      - ./static:/app/static:ro
+      - ./main.py:/app/main.py:ro
+      - ./credentials:/app/credentials:ro
+      - ./benchmark_cache:/app/benchmark_cache
+      - ./benchmark_reports:/app/benchmark_reports
+    command: ["python", "main.py", "serve", "--host", "0.0.0.0", "--port", "8000"]
+    stdin_open: true
+    tty: true
+
+  # Realtime mic mode. Linux only — Mac/Windows Docker Desktop cannot pass the
+  # host microphone into a container. On Linux, this requires PulseAudio to be
+  # running on the host. Run with:
+  #   docker compose run --rm stt-realtime
+  stt-realtime:
+    extends:
+      service: stt
+    devices:
+      - /dev/snd:/dev/snd
+    group_add:
+      - audio
+    environment:
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+    volumes:
+      - model-cache:/root/.cache
+      - ./audio:/app/audio
+      - ./transcripts:/app/transcripts
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json:ro
+      # Live source — restart container after edits to apply (no rebuild)
+      - ./src:/app/src:ro
+      - ./static:/app/static:ro
+      - ./main.py:/app/main.py:ro
+      - ./credentials:/app/credentials:ro
+      - ./benchmark_cache:/app/benchmark_cache
+      - ./benchmark_reports:/app/benchmark_reports
+      # PulseAudio socket — adjust UID 1000 if your host user is different
+      - /run/user/1000/pulse:/run/user/1000/pulse
+    command: ["python", "main.py", "realtime"]
+    # stdin_open + tty so Ctrl+C reaches the process
+    stdin_open: true
+    tty: true
+
+volumes:
+  # Named volume for ~14 GB of model weights. Survives `docker compose down`.
+  # Remove with `docker volume rm <project>_model-cache` if you want to wipe.
+  model-cache:

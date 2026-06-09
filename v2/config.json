@@ -1,0 +1,126 @@
+{
+  "asr_backend": "nemo",
+  "models": {
+    "nemo": {
+      "realtime": "stt_en_fastconformer_hybrid_large_streaming_80ms",
+      "batch": "stt_en_conformer_ctc_large",
+      "_note": "Only the *_streaming_* model does TRUE streaming (cache-aware). All others use ChunkedASRStream over batch ASR.",
+      "available": {
+        "stt_en_fastconformer_hybrid_large_streaming_80ms": "TRUE STREAMING — Conformer-Transducer, ~80ms lookahead, best realtime",
+        "stt_en_fastconformer_hybrid_large_pc": "Batch — high accuracy, fast inference (~400MB)",
+        "stt_en_conformer_ctc_large": "Batch — best English accuracy (~500MB, slower)",
+        "stt_en_conformer_ctc_medium": "Batch — balanced (~300MB)",
+        "stt_en_conformer_ctc_small": "Batch — fastest local English (~200MB)"
+      }
+    },
+    "qwen": {
+      "realtime": "Qwen/Qwen3-ASR-0.6B",
+      "batch": "Qwen/Qwen3-ASR-1.7B",
+      "language": "English",
+      "_note": "All Qwen models are batch-only — use ChunkedASRStream (streaming UX over batch ASR). 0.6B is fastest, 1.7B is most accurate.",
+      "available": {
+        "Qwen/Qwen3-ASR-0.6B": "Chunked — fastest Qwen, balanced accuracy",
+        "Qwen/Qwen3-ASR-1.7B": "Chunked — SOTA Qwen accuracy (slower)",
+        "Qwen/Qwen2-Audio-7B-Instruct": "Chunked — legacy, slowest"
+      }
+    },
+    "gemini": {
+      "realtime": "gemini-2.0-flash-live-001",
+      "batch": "gemini-2.5-pro",
+      "language": "English",
+      "_note": "Live models (true streaming) are the *-live-* / *-native-audio-* model IDs. Non-Live ids (gemini-2.5-flash, etc.) fall back to chunked-streaming-UX via the GeminiASRBackend.",
+      "available": {
+        "gemini-2.0-flash-live-001": "Live API (true streaming, ~300ms first-word)",
+        "gemini-2.5-flash-preview-native-audio-dialog": "Live API — newest, native audio",
+        "gemini-2.5-flash": "Batch (chunked over batch — slower interim)",
+        "gemini-2.5-pro": "Batch — highest quality, slowest",
+        "gemini-2.0-flash": "Batch — older fast model"
+      }
+    },
+    "google-stt": {
+      "realtime": "chirp_2",
+      "batch": "chirp_2",
+      "location": "us-central1",
+      "languages": ["en-US"],
+      "project": null,
+      "_note": "All models use Google's streaming_recognize gRPC (TRUE streaming, ~300ms first-word). chirp_2 is the highest-quality model widely available; chirp_3 requires allowlisting and uses location='global'.",
+      "available": {
+        "chirp_2": "TRUE STREAMING — Universal Speech Model 2, best quality available",
+        "latest_long": "TRUE STREAMING — long-form, traditional model",
+        "latest_short": "TRUE STREAMING — short utterances",
+        "chirp": "TRUE STREAMING — original Chirp",
+        "telephony": "TRUE STREAMING — phone-call audio",
+        "telephony_short": "TRUE STREAMING — phone-call short utterances"
+      }
+    },
+    "whisper": {
+      "realtime": "base",
+      "batch": "small",
+      "language": "en",
+      "beam_size": 5,
+      "vad_filter": false,
+      "_note": "Whisper is batch-only — uses ChunkedASRStream with a 5s interim window (Whisper rewards more context). vad_filter=false disables faster-whisper's built-in Silero VAD (no VAD anywhere in the pipeline). Pick 'base' for low latency on CPU, 'large-v3' for best accuracy. 'distil-large-v3' is the sweet-spot if you have a GPU.",
+      "available": {
+        "base": "Chunked — fast realtime on CPU (~74MB)",
+        "tiny": "Chunked — fastest, lowest quality (~39MB)",
+        "small": "Chunked — balanced (~244MB)",
+        "distil-large-v3": "Chunked — fast + high quality, recommended for GPU (~1.5GB)",
+        "medium": "Chunked — higher quality, slower (~769MB)",
+        "large-v3": "Chunked — best quality, slowest (~1.5GB)",
+        "large-v2": "Chunked — high quality (~1.5GB)"
+      }
+    }
+  },
+  "audio": {
+    "sample_rate": 16000,
+    "channels": 1
+  },
+  "realtime": {
+    "chunk_duration": 0.5,
+    "buffer_duration": 15.0,
+    "silence_threshold": 0.004,
+    "save_transcript": true,
+    "print_to_console": true,
+    "boundary_strategy": "vad",
+    "max_chunk_duration": 10.0,
+    "overlap_duration": 0.5,
+    "min_silence_ms": 200
+  },
+  "recording": {
+    "enabled": true,
+    "format": "mp3",
+    "bitrate_kbps": 128,
+    "max_part_mb": 10,
+    "dir": "audio",
+    "batch_window_sec": 300
+  },
+  "batch": {
+    "handle_overlapping_speakers": true
+  },
+  "nemo": {
+    "batch_size": 8,
+    "preserve_alignment": false,
+    "verbose": false
+  },
+  "output": {
+    "transcript_dir": "transcripts",
+    "timestamp_format": "%d-%m-%y_%H-%M-%S"
+  },
+  "benchmark": {
+    "cache_dir": "benchmark_cache",
+    "output_dir": "benchmark_reports",
+    "datasets": {
+      "librispeech": {
+        "split": "test-clean",
+        "hf_repo": "openslr/librispeech_asr"
+      }
+    }
+  },
+  "logging": {
+    "log_dir": "logs",
+    "file_level": "DEBUG",
+    "console_level": "WARNING",
+    "file_enabled": true,
+    "console_enabled": true
+  }
+}
