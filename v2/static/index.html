@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Speech-to-Text — Realtime</title>
+<link rel="stylesheet" href="/static/app.css" />
+</head>
+<body>
+
+<!-- ────────────────────────── App shell ────────────────────────── -->
+<div class="app">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">●</span>
+      <h1>Speech-to-Text</h1>
+      <span class="brand-tag">realtime</span>
+    </div>
+    <div class="topbar-right">
+      <div class="conn" id="connBadge" data-state="checking" title="Server connection">
+        <span class="conn-dot"></span>
+        <span class="conn-label" id="connLabel">checking…</span>
+      </div>
+      <div class="meta" id="serverInfo">connecting…</div>
+    </div>
+  </header>
+
+  <!-- Sidebar (controls + diagnostics) -->
+  <aside class="sidebar">
+    <section class="card">
+      <h2 class="card-title">Backend</h2>
+      <label class="field">
+        <span class="field-label">Provider</span>
+        <select id="backendSelect" class="select"></select>
+      </label>
+      <label class="field">
+        <span class="field-label">Model</span>
+        <select id="modelSelect" class="select"></select>
+      </label>
+      <p class="card-hint" id="modelHint">Pick a backend and model, then start the mic.</p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Capture</h2>
+      <div class="btn-row">
+        <button id="startBtn" class="btn btn-primary">
+          <span class="btn-icon">●</span> Start mic
+        </button>
+        <button id="stopBtn" class="btn btn-danger" disabled>Stop</button>
+      </div>
+      <div class="status-row">
+        <span class="status-pill" id="statusPill" data-state="idle">
+          <span class="status-dot"></span>
+          <span id="statusText">idle</span>
+        </span>
+      </div>
+      <div class="meter-row">
+        <span class="meter-label">Input level</span>
+        <div class="meter"><div id="meterBar"></div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-titlebar">
+        <h2 class="card-title">Diagnostics</h2>
+        <button id="clearLogBtn" class="btn btn-ghost btn-tiny">clear</button>
+      </div>
+      <ul class="log-list" id="errorLog">
+        <li class="log-empty">No issues yet.</li>
+      </ul>
+    </section>
+  </aside>
+
+  <!-- Main transcript area -->
+  <main class="main">
+    <div class="main-toolbar">
+      <span class="main-title">Transcript</span>
+      <span class="main-meta" id="footer"></span>
+      <div class="main-actions">
+        <button id="clearBtn" class="btn btn-ghost btn-small">Clear transcript</button>
+      </div>
+    </div>
+
+    <!-- Live recording banner: visible only while the mic is capturing -->
+    <div id="recBanner" class="rec-banner" hidden>
+      <div class="rec-left">
+        <span class="rec-dot"></span>
+        <span class="rec-label">LIVE</span>
+        <span class="rec-elapsed" id="recElapsed">0:00</span>
+      </div>
+      <div class="freq-bars" id="freqBars" aria-hidden="true">
+        <!-- bars are inserted by JS -->
+      </div>
+      <div class="rec-right" id="recBackend">…</div>
+    </div>
+
+    <div class="transcript-wrapper">
+      <div id="transcript" class="transcript">
+        <div class="empty-state">
+          <div class="empty-icon">🎙</div>
+          <div class="empty-title">Ready to listen</div>
+          <div class="empty-sub">
+            Pick a backend, click <strong>Start mic</strong>, and speak. Each
+            line will appear here with a speaker label and timestamp.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ────────────────────────── Loading overlay ────────────────────────── -->
+<div class="overlay" id="loadingOverlay" hidden>
+  <div class="overlay-card">
+    <div class="spinner"></div>
+    <div class="overlay-title" id="overlayTitle">Loading model…</div>
+    <div class="overlay-sub" id="overlaySub">This can take a moment on first run.</div>
+  </div>
+</div>
+
+<!-- ────────────────────────── Toast container ────────────────────────── -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
